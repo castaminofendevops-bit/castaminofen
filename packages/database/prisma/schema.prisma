@@ -78,6 +78,7 @@ model User {
   oauthAccounts   OAuthAccount[]
   refreshTokens   RefreshToken[]
   creatorProfile  CreatorProfile?
+  creatorRequests CreatorRequest[]
   subscription    Subscription?
   purchases       Purchase[]
   follows         Follow[]
@@ -149,6 +150,7 @@ model Content {
   description   String?
   coverUrl      String?
   status        ContentStatus @default(DRAFT)
+  sourceFeedUrl String?       @unique
   isPremium     Boolean       @default(false)
   price         Int?          // Price in Rial (0 = free)
   language      String        @default("fa")
@@ -183,6 +185,7 @@ model Episode {
   thumbnailUrl  String?
   isPremium     Boolean  @default(false)
   isVideo       Boolean  @default(false)
+  rssGuid       String?   @unique
   publishedAt   DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
