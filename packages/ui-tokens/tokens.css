@@ -1,0 +1,79 @@
+/* Castaminofen color system — sync with packages/ui-tokens/src/tokens.ts */
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --brand-primary: #776cfe;
+  --brand-accent-green: #00ea99;
+  --brand-accent-purple: #a03cff;
+  --brand-secondary-olive: #99be7d;
+
+  --bg-primary: #0f111a;
+  --bg-secondary: #1a1d29;
+  --bg-elevated: #232735;
+  --bg-card: #1a1d29;
+  --bg-input: #232735;
+  --bg-surface-hover: #2d3748;
+  --bg-surface-active: #4a5568;
+
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #9ca3af;
+  --text-body: #d1d5db;
+  --text-on-primary: #f3f4f6;
+
+  --accent: var(--brand-primary);
+  --accent-hover: var(--brand-accent-purple);
+  --accent-muted: rgba(119, 108, 254, 0.15);
+  --accent-border: rgba(119, 108, 254, 0.35);
+
+  --secondary: var(--brand-secondary-olive);
+  --secondary-hover: var(--brand-accent-green);
+
+  --link-hover: var(--brand-accent-green);
+  --link-active: var(--brand-accent-green);
+
+  --border: var(--bg-surface-hover);
+  --border-light: var(--bg-surface-active);
+  --success: var(--brand-accent-green);
+  --error: var(--brand-accent-purple);
+  --video-bg: var(--bg-primary);
+  --overlay: rgba(15, 17, 26, 0.72);
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --player-height: 80px;
+  --nav-height: 64px;
+  --font: var(--font-vazirmatn), 'Segoe UI', system-ui, sans-serif;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-elevated: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-input: #f3f4f6;
+  --bg-surface-hover: #f3f4f6;
+  --bg-surface-active: #e5e7eb;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #4b5563;
+  --text-body: #4b5563;
+  --text-on-primary: #f3f4f6;
+
+  --accent-muted: rgba(119, 108, 254, 0.12);
+  --link-hover: var(--brand-primary);
+  --link-active: var(--brand-primary);
+
+  --border: #e5e7eb;
+  --border-light: #e5e7eb;
+  --overlay: rgba(17, 24, 39, 0.45);
+  --shadow: 0 4px 24px rgba(17, 24, 39, 0.08);
+}

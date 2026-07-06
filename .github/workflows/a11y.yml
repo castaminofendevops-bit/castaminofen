@@ -1,0 +1,43 @@
+name: Accessibility (axe)
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'apps/web/**'
+      - 'packages/ui-tokens/**'
+      - '.github/workflows/a11y.yml'
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'packages/ui-tokens/**'
+      - '.github/workflows/a11y.yml'
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: |
+          pnpm --filter @castaminofen/ui-tokens build
+          pnpm --filter @castaminofen/shared build
+
+      - name: Build web app
+        run: pnpm --filter @castaminofen/web build
+
+      - name: Run axe accessibility audit
+        run: pnpm --filter @castaminofen/web a11y

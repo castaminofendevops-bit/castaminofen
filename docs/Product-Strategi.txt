@@ -1,0 +1,405 @@
+ROLE
+
+Act as a Senior Product Strategist, Growth Product Manager, UX Researcher, Retention Specialist, Monetization Consultant, and Startup Advisor.
+
+CONTEXT
+
+I have an application (mobile/web platform) and I want you to analyze it as if you were preparing a complete product strategy document for a startup that aims to become a market-leading product.
+
+Your task is NOT to simply list features.
+
+Your task is to deeply analyze everything the application currently has, everything it could have, and everything that should be added to maximize:
+
+User Experience (UX)
+
+User Engagement
+
+User Retention
+
+Daily Active Usage
+
+Virality & Sharing
+
+Audience Growth
+
+Monetization Potential
+
+Brand Loyalty
+
+Product Stickiness
+
+Long-term Scalability
+
+DELIVERABLE REQUIREMENTS
+
+Generate a comprehensive document named product-growth-roadmap.md containing all of the following sections:
+
+1. Current Core Features
+Audit
+
+List all existing features that can be inferred from the project.
+
+For each feature include:
+
+Purpose
+
+User value
+
+Business value
+
+UX strengths
+
+UX weaknesses
+
+Improvement opportunities
+
+2. Missing Features (High Priority)
+Build next
+
+Identify the most important features that are missing.
+
+Prioritize them as:
+
+P0 — Critical
+
+P1 — Important
+
+P2 — Nice to Have
+
+For each feature explain why it matters and what KPI it improves.
+
+3. Advanced / Future Features
+Innovation
+
+Propose visionary capabilities such as:
+
+AI-powered experiences
+
+Personalization engines
+
+Recommendation systems
+
+Smart automation
+
+Collaborative/social features
+
+Creator tools
+
+Community features
+
+Voice / audio / video integrations
+
+Cross-platform synchronization
+
+Offline intelligence
+
+Predictive UX
+
+Behavior-based customization
+
+4. User Retention Strategy
+30 / 90 / 365
+
+Design a retention system for:
+
+Day 1
+
+Day 7
+
+Day 30
+
+Day 90
+
+1 Year
+
+Include:
+
+Habit-forming loops
+
+Reward systems
+
+Streaks
+
+Achievements
+
+Progress tracking
+
+Personal milestones
+
+Re-engagement campaigns
+
+Push notification strategy
+
+Email / in-app messaging strategy
+
+5. User Acquisition & Virality
+Growth loops
+
+Suggest mechanisms that encourage users to invite others:
+
+Referral systems
+
+Shareable content
+
+Social proof
+
+Public profiles
+
+Community challenges
+
+Leaderboards
+
+Collaborative experiences
+
+Embeddable widgets
+
+UGC (User Generated Content)
+
+6. Monetization Opportunities
+Revenue
+
+Analyze all possible revenue models:
+
+Freemium
+
+Subscription tiers
+
+Pro features
+
+Credits / tokens
+
+Marketplace
+
+Creator economy
+
+Sponsorships
+
+Enterprise plans
+
+API access
+
+Premium customization
+
+White-label licensing
+
+For each model estimate:
+
+Complexity
+
+Revenue potential
+
+Impact on UX
+
+Recommended timing
+
+7. UX / UI Improvement Ideas
+Awwwards-level
+
+Provide detailed recommendations for:
+
+Onboarding
+
+Navigation architecture
+
+Information hierarchy
+
+Micro-interactions
+
+Motion design
+
+Empty states
+
+Loading states
+
+Error handling
+
+Accessibility
+
+Dark mode
+
+Performance perception
+
+Mobile ergonomics
+
+Tablet experience
+
+Desktop experience
+
+Reference Apple-quality, Linear-quality, Notion-quality, and Spotify-quality UX patterns.
+
+8. Psychological & Behavioral Design
+Engagement
+
+Explain how to leverage:
+
+Progress bias
+
+Goal gradient effect
+
+Variable rewards
+
+Social validation
+
+Commitment & consistency
+
+Personal identity building
+
+Loss aversion
+
+Anticipation loops
+
+Collection mechanics
+
+Without creating manipulative dark patterns.
+
+9. Analytics & KPI Framework
+Measure
+
+Define the metrics that should be tracked:
+
+DAU / WAU / MAU
+
+Retention curves
+
+Session duration
+
+Feature adoption
+
+Conversion funnels
+
+Churn rate
+
+LTV
+
+CAC
+
+NPS
+
+North Star Metric
+
+The single metric that best reflects long-term product value.
+
+10. 12-Month Product Roadmap
+Quarterly
+
+Create a realistic roadmap divided into:
+
+Quarter
+
+	
+
+Focus
+
+
+
+
+Q1
+
+	
+
+Foundation & core UX
+
+
+
+
+Q2
+
+	
+
+Engagement & retention
+
+
+
+
+Q3
+
+	
+
+Growth & social features
+
+
+
+
+Q4
+
+	
+
+Monetization & advanced AI
+
+For each quarter include:
+
+Objectives
+
+Features to build
+
+Expected impact
+
+Risk level
+
+Success metrics
+
+11. Final Strategic Recommendations
+Executive summary
+
+Conclude with:
+
+Top 10 highest-impact improvements
+
+Top 5 quick wins (less than 1 week)
+
+Top 5 medium-term investments (1–3 months)
+
+Top 5 long-term strategic bets (6–12 months)
+
+The single most important feature to build next
+
+OUTPUT FORMAT
+
+Return the result as a well-structured Markdown document.
+
+Use clear headings, tables, priority matrices, and action lists.
+
+Be extremely specific and practical.
+
+Avoid generic advice.
+
+Think like a team preparing a product for Awwwards-level UX and venture-scale growth.
+
+Include concrete implementation ideas, not just concepts.
+
+IMPORTANT
+
+Assume the goal is to build a world-class consumer application capable of competing with top-tier products in its category.
+
+Analyze both what exists today and what should exist in the ideal future version of the product.
+
+
+The application is a next-generation AI-powered podcast and vodcast platform called Castaminofen.
+
+It includes content discovery, AI summaries, personalized recommendations, creator tools, immersive interfaces, and social engagement features.
+
+Focus especially on:
+
+* Podcast/Vodcast discovery
+
+* AI-generated summaries
+
+* Audio intelligence
+
+* Multilingual support
+
+* Creator monetization
+
+* Community interaction
+
+* Spatial / immersive UI concepts
+
+* Content recommendation algorithms
+
+* Listening habit formation
+
+* Retention loops for podcast consumers
+
+* Tools that help creators grow their audience
+
+* Features that make the platform feel significantly more advanced than Spotify, YouTube Podcasts, and Apple Podcasts.

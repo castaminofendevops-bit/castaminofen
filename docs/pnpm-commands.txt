@@ -1,0 +1,54 @@
+------------------------------
+------------------------------
+
+# Terminal 1 — infrastructure
+pnpm docker:up
+
+# Terminal 2 — API (port 3000)
+pnpm --filter @castaminofen/api-gateway dev
+
+# Terminal 3 — mobile app (port 8082)
+pnpm --filter @castaminofen/mobile dev
+
+#Or start everything at once from the repo root:
+pnpm dev
+
+#First-time setup (if the database is empty):
+pnpm db:migrate
+pnpm db:seed
+
+
+------------------------------
+------------------------------
+
+# سرور موبایل
+pnpm --filter @castaminofen/mobile dev
+
+# نصب دیپندنسی برا موبایل 
+pnpm --filter mobile add @babel/runtime
+اگر اسم پکیج mobile نیست:
+pnpm --filter ./apps/mobile add @babel/runtime
+یا وارد پوشه اپ شو:
+cd apps/mobile
+pnpm add @babel/runtime
+
+# 
+pnpm --filter @castaminofen/api-gateway dev
+
+
+-----------------------------------------------------
+--------------------------------------------------------
+
+تست
+
+pnpm docker:up
+pnpm --filter @castaminofen/api-gateway dev
+pnpm --filter @castaminofen/mobile dev   # یا web
+
+pnpm db:seed   # یک‌بار — coverUrl را به رکوردهای موجود اضافه می‌کند
+
+----------------------------------------------------------
+---------------------------------------------------------
+
+pnpm --filter @castaminofen/mobile build;
+pnpm --filter @castaminofen/web build

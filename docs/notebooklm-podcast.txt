@@ -1,0 +1,91 @@
+This field is defining the analytical scope of the episode. The AI hosts should not be generic—they should be constrained to a clear interpretive objective over the provided sources.
+
+Since you haven’t included the sources yet, you need to anchor the focus along one of these axes:
+
+Option 1 — Thematic synthesis (recommended default)
+
+Focus on extracting the central theme across all sources, then connecting recurring concepts, assumptions, and contradictions.
+
+“Identify the core thesis across all sources, map recurring ideas, and explain how they interrelate into a single coherent narrative.”
+
+Option 2 — Structured breakdown
+
+Focus on decomposing the material into clear components.
+
+“Break down the sources into key claims, supporting evidence, and underlying assumptions, then reconstruct the logical structure.”
+
+Option 3 — Contradictions & tensions
+
+Focus on disagreement and inconsistency.
+
+“Highlight contradictions, conflicting interpretations, and unresolved tensions between the sources, and explain why they matter.”
+
+Option 4 — Practical implications
+
+Focus on applicability.
+
+“Translate the sources into actionable insights, implications, and real-world consequences.”
+
+Option 5 — Critical evaluation (most rigorous)
+
+Focus on validity.
+
+“Evaluate the strength of arguments, identify weak reasoning, missing evidence, and potential biases across the sources.”
+
+If you want a precise recommendation:
+
+Deep dive → Option 1 or 5
+Brief → Option 1
+Critique → Option 5
+Debate → Option 3
+
+If you share what the sources are about, I can tighten this into a single optimized prompt instead of a framework.
+
+
+
+
+
+این بخش، **دامنهٔ تحلیلی (Analytical Scope)** اپیزود را مشخص می‌کند. میزبان‌های هوش مصنوعی نباید به‌صورت کلی و عمومی صحبت کنند؛ بلکه باید بر اساس یک **هدف تفسیری مشخص** نسبت به منابع ارائه‌شده محدود و هدایت شوند.
+
+از آنجا که هنوز منابع را ارائه نکرده‌اید، بهتر است محور تحلیل را بر اساس یکی از گزینه‌های زیر تعیین کنید:
+
+### گزینه ۱ — تلفیق موضوعی (پیشنهاد پیش‌فرض)
+
+تمرکز بر استخراج موضوع یا ایدهٔ مرکزی مشترک میان همهٔ منابع، سپس برقراری ارتباط میان مفاهیم، فرضیات و تناقض‌های تکرارشونده.
+
+> «موضوع یا تز اصلی مشترک میان تمام منابع را شناسایی کنید، ایده‌های تکرارشونده را ترسیم کنید و توضیح دهید که چگونه این ایده‌ها در کنار هم یک روایت منسجم را شکل می‌دهند.»
+
+### گزینه ۲ — تجزیه و تحلیل ساختاری
+
+تمرکز بر شکستن محتوا به اجزای اصلی آن.
+
+> «منابع را به ادعاهای کلیدی، شواهد پشتیبان و فرضیات زیربنایی تقسیم کنید، سپس ساختار منطقی آن‌ها را بازسازی کنید.»
+
+### گزینه ۳ — تناقض‌ها و تنش‌ها
+
+تمرکز بر اختلاف‌ها و ناسازگاری‌ها.
+
+> «تناقض‌ها، تفسیرهای متعارض و تنش‌های حل‌نشده میان منابع را شناسایی کنید و توضیح دهید که چرا این موارد اهمیت دارند.»
+
+### گزینه ۴ — پیامدهای عملی
+
+تمرکز بر کاربردپذیری.
+
+> «منابع را به بینش‌های عملی، نتایج کاربردی و پیامدهای دنیای واقعی تبدیل کنید.»
+
+### گزینه ۵ — ارزیابی انتقادی (دقیق‌ترین رویکرد)
+
+تمرکز بر سنجش اعتبار و استحکام استدلال‌ها.
+
+> «استحکام استدلال‌ها را ارزیابی کنید، ضعف‌های استدلالی، شواهد ناکافی و سوگیری‌های احتمالی موجود در منابع را شناسایی کنید.»
+
+---
+
+اگر بخواهم یک پیشنهاد دقیق ارائه دهم:
+
+* **برای تحلیل عمیق:** گزینهٔ ۱ یا ۵
+* **برای یک مرور یا خلاصهٔ کوتاه:** گزینهٔ ۱
+* **برای نقد و بررسی:** گزینهٔ ۵
+* **برای یک بحث یا مناظره:** گزینهٔ ۳
+
+اگر موضوع یا محتوای منابع را با من به اشتراک بگذارید، می‌توانم به‌جای یک چارچوب کلی، این بخش را به یک **پرامپت دقیق و بهینه** تبدیل کنم.
