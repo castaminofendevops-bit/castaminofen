@@ -7,6 +7,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -18,6 +19,14 @@ import { useAppTheme } from '@/context/ThemeContext';
 import { useThemedStyles, type ThemeColors } from '@/hooks/useThemedStyles';
 
 type Plan = { id: string; name: string; price: number; currency: string };
+
+type PaymentSession = {
+  gatewayRef: string;
+  gatewayUrl: string;
+  amount: number;
+  currency: string;
+  type: 'SUBSCRIBE' | 'PURCHASE';
+};
 
 interface PaywallModalProps {
   visible: boolean;
@@ -129,81 +138,98 @@ export function PaywallModal({
   const styles = useThemedStyles(createStyles);
   const accessToken = usePlayerStore((s) => s.accessToken);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [session, setSession] = useState<PaymentSession | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     if (!visible) return;
     setError('');
+    setSuccess('');
+    setSession(null);
     void apiFetch<Plan[]>('/payment/plans', {}, accessToken).then((res) => {
       if (res.data) setPlans(res.data);
     });
   }, [visible, accessToken]);
 
-  const subscribe = useCallback(async () => {
-    if (!accessToken) {
-      onClose();
-      router.push('/login');
-      return;
+  const openGateway = useCallback(async (url: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setError('باز کردن درگاه پرداخت با خطا مواجه شد. لطفاً دوباره تلاش کنید.');
     }
-    setLoading(true);
-    setError('');
-    const init = await apiFetch<{ gatewayRef: string }>(
-      '/payment/subscribe/PREMIUM',
-      { method: 'POST' },
-      accessToken,
-    );
-    if (!init.success || !init.data?.gatewayRef) {
-      setError(init.error?.message || 'خطا در شروع پرداخت');
+  }, []);
+
+  const createSession = useCallback(
+    async (path: string, type: 'SUBSCRIBE' | 'PURCHASE') => {
+      if (!accessToken) {
+        onClose();
+        router.push('/login');
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+      setSuccess('');
+
+      const init = await apiFetch<{
+        gatewayRef: string;
+        gatewayUrl: string;
+        amount: number;
+        currency: string;
+      }>(path, { method: 'POST' }, accessToken);
+
+      if (!init.success || !init.data?.gatewayRef || !init.data?.gatewayUrl) {
+        setError(init.error?.message || 'خطا در شروع پرداخت');
+        setLoading(false);
+        return;
+      }
+
+      setSession({
+        gatewayRef: init.data.gatewayRef,
+        gatewayUrl: init.data.gatewayUrl,
+        amount: init.data.amount,
+        currency: init.data.currency,
+        type,
+      });
       setLoading(false);
-      return;
-    }
-    const verify = await apiFetch(
-      '/payment/verify',
-      { method: 'POST', body: JSON.stringify({ gatewayRef: init.data.gatewayRef }) },
-      accessToken,
-    );
-    setLoading(false);
-    if (verify.success) {
-      onUnlocked?.();
-      onClose();
-    } else {
-      setError(verify.error?.message || 'خطا در تأیید پرداخت');
-    }
-  }, [accessToken, onClose, onUnlocked, router]);
+      void openGateway(init.data.gatewayUrl);
+    },
+    [accessToken, onClose, router, openGateway],
+  );
+
+  const subscribe = useCallback(async () => {
+    await createSession('/payment/subscribe/PREMIUM', 'SUBSCRIBE');
+  }, [createSession]);
 
   const purchaseContent = useCallback(async () => {
     if (!contentId) return;
-    if (!accessToken) {
-      onClose();
-      router.push('/login');
-      return;
-    }
+    await createSession(`/payment/purchase/${contentId}`, 'PURCHASE');
+  }, [contentId, createSession]);
+
+  const verifyPayment = useCallback(async () => {
+    if (!session) return;
     setLoading(true);
     setError('');
-    const init = await apiFetch<{ gatewayRef: string }>(
-      `/payment/purchase/${contentId}`,
-      { method: 'POST' },
+    setSuccess('');
+
+    const path = session.type === 'SUBSCRIBE' ? '/payment/verify' : '/payment/purchase/verify';
+    const verify = await apiFetch<{ verified: boolean }>(
+      path,
+      { method: 'POST', body: JSON.stringify({ gatewayRef: session.gatewayRef }) },
       accessToken,
     );
-    if (!init.success || !init.data?.gatewayRef) {
-      setError(init.error?.message || 'خطا در شروع خرید');
-      setLoading(false);
-      return;
-    }
-    const verify = await apiFetch(
-      '/payment/purchase/verify',
-      { method: 'POST', body: JSON.stringify({ gatewayRef: init.data.gatewayRef }) },
-      accessToken,
-    );
+
     setLoading(false);
     if (verify.success) {
+      setSuccess('پرداخت با موفقیت تأیید شد. اکنون دسترسی فعال است.');
       onUnlocked?.();
-      onClose();
+      setTimeout(() => onClose(), 900);
     } else {
-      setError(verify.error?.message || 'خطا در تأیید خرید');
+      setError(verify.error?.message || 'خطا در تأیید پرداخت');
     }
-  }, [accessToken, contentId, onClose, onUnlocked, router]);
+  }, [accessToken, onClose, onUnlocked, session]);
 
   const premiumPlan = plans.find((p) => p.id === 'PREMIUM');
   const premiumPrice = premiumPlan?.price ?? SUBSCRIPTION_PLANS.PREMIUM.price;
@@ -243,14 +269,14 @@ export function PaywallModal({
               <TouchableOpacity
                 style={styles.primaryBtn}
                 onPress={subscribe}
-                disabled={loading}
+                disabled={loading || !!session}
                 accessibilityRole="button"
                 accessibilityLabel="خرید اشتراک پریمیوم"
               >
                 {loading ? (
                   <ActivityIndicator color={colors.textOnPrimary} />
                 ) : (
-                  <Text style={styles.primaryBtnText}>خرید اشتراک پریمیوم</Text>
+                  <Text style={styles.primaryBtnText}>{session ? 'پرداخت آغاز شد' : 'خرید اشتراک پریمیوم'}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -259,14 +285,45 @@ export function PaywallModal({
               <TouchableOpacity
                 style={styles.secondaryBtn}
                 onPress={purchaseContent}
-                disabled={loading}
+                disabled={loading || !!session}
                 accessibilityRole="button"
                 accessibilityLabel="خرید تکی این محتوا"
               >
-                <Text style={styles.secondaryBtnText}>خرید تکی این محتوا</Text>
+                <Text style={styles.secondaryBtnText}>{session ? 'پرداخت آغاز شد' : 'خرید تکی این محتوا'}</Text>
               </TouchableOpacity>
             ) : null}
 
+            {session ? (
+              <>
+                <Text style={styles.footnote}>
+                  درگاه پرداخت باز شد. اگر به صورت خودکار باز نشد، از دکمه زیر استفاده کنید.
+                </Text>
+                <TouchableOpacity
+                  style={styles.secondaryBtn}
+                  onPress={() => void openGateway(session.gatewayUrl)}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.secondaryBtnText}>باز کردن درگاه پرداخت</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.primaryBtn}
+                  onPress={verifyPayment}
+                  disabled={loading}
+                  accessibilityRole="button"
+                  accessibilityLabel="تأیید پرداخت"
+                >
+                  {loading ? (
+                    <ActivityIndicator color={colors.textOnPrimary} />
+                  ) : (
+                    <Text style={styles.primaryBtnText}>تأیید پرداخت</Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            ) : null}
+
+            {success ? (
+              <Text style={styles.footnote}>{success}</Text>
+            ) : null}
             {error ? (
               <Text style={styles.error} accessibilityRole="alert">
                 {error}
@@ -274,14 +331,7 @@ export function PaywallModal({
             ) : null}
 
             <Text style={styles.footnote}>
-              درگاه پرداخت در نسخه MVP شبیه‌سازی شده است.{' '}
-              {!accessToken ? (
-                <Text style={styles.loginLink} onPress={() => { onClose(); router.push('/login'); }}>
-                  برای ادامه وارد شوید
-                </Text>
-              ) : (
-                'پس از خرید می‌توانید بلافاصله پخش کنید.'
-              )}
+              برای ادامه پرداخت، درگاه در مرورگر باز می‌شود و پس از تکمیل روی «تأیید پرداخت» کلیک کنید.
             </Text>
           </ScrollView>
         </Pressable>
