@@ -351,3 +351,21 @@ model Purchase {
   @@index([gatewayRef])
   @@map("purchases")
 }
+
+// Creator onboarding requests
+model CreatorRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  fullName  String
+  bio       String?
+  sampleUrl String?
+  idFileUrl String?
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("creator_requests")
+}
