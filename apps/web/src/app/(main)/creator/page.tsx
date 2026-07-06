@@ -83,7 +83,13 @@ export default function CreatorPage() {
           برای دسترسی به پنل سازنده <Link href="/login">وارد شوید</Link>
         </p>
       ) : !isCreator ? (
-        <p>این بخش فقط برای حساب سازنده است.</p>
+        <div>
+          <p>این بخش فقط برای حساب سازنده است.</p>
+          <p className="section-subtitle">اگر مایل هستید می‌توانید درخواست تبدیل به سازنده را ارسال کنید.</p>
+          <Link href="/creator/request" className="btn-primary" style={{ display: 'inline-flex', marginTop: '1rem' }}>
+            درخواست سازنده
+          </Link>
+        </div>
       ) : (
         <>
           <form onSubmit={createContent} className="creator-form">

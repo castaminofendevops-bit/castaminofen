@@ -47,6 +47,12 @@ enum PurchaseStatus {
   REFUNDED
 }
 
+enum CreatorRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum DownloadStatus {
   PENDING
   IN_PROGRESS
@@ -354,15 +360,16 @@ model Purchase {
 
 // Creator onboarding requests
 model CreatorRequest {
-  id        String   @id @default(cuid())
-  userId    String
-  fullName  String
-  bio       String?
-  sampleUrl String?
-  idFileUrl String?
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String               @id @default(cuid())
+  userId        String
+  fullName      String
+  bio           String?
+  sampleUrl     String?
+  idFileUrl     String?
+  status        CreatorRequestStatus @default(PENDING)
+  reviewComment String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

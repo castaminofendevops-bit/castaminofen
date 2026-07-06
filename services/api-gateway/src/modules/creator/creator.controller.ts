@@ -1,4 +1,5 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Req, Get, Patch, Param, Body } from '@nestjs/common';
+import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CreatorService } from './creator.service';
@@ -12,6 +13,11 @@ class RequestCreatorDto {
   sampleUrl?: string;
 }
 
+class ReviewRequestDto {
+  action!: 'APPROVE' | 'REJECT';
+  reviewComment?: string;
+}
+
 @ApiTags('Creators')
 @Controller('creators')
 export class CreatorController {
@@ -21,14 +27,12 @@ export class CreatorController {
   @Auth()
   @UseInterceptors(FileInterceptor('idFile'))
   @ApiOperation({ summary: 'درخواست تبدیل به تولیدکننده (ارسال مدارک)' })
-  async request(@CurrentUser('id') userId: string, @UploadedFile() file?: Express.Multer.File) {
-    // Parse body from multipart form-data via request object is handled by Nest; here we access raw body via decorators isn't straightforward.
-    // Simpler: access properties from (global) request — but for this stub, accept that client sends fields as text fields and Nest maps them to body.
-    // To keep controller simple, read from (global) arguments via request? For now, rely on multer to provide file and expect fields in req.body.
-    // Using any to avoid strict typing issues.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const reqAny: any = (arguments as any)[0];
-    const body: RequestCreatorDto = reqAny?.body ?? {};
+  async request(
+    @CurrentUser('id') userId: string,
+    @UploadedFile() file?: Express.Multer.File,
+    @Req() req?: Request,
+  ) {
+    const body = (req?.body ?? {}) as RequestCreatorDto;
 
     const result = await this.creatorService.requestCreator(userId, {
       fullName: body.fullName || '',
@@ -37,5 +41,26 @@ export class CreatorController {
     }, file);
 
     return successResponse(result);
+  }
+
+  @Get('request')
+  @Auth()
+  @ApiOperation({ summary: 'وضعیت درخواست تبدیل به سازنده خود' })
+  async getMyRequest(@CurrentUser('id') userId: string) {
+    return successResponse(await this.creatorService.getMyRequest(userId));
+  }
+
+  @Get('requests')
+  @Auth('ADMIN')
+  @ApiOperation({ summary: 'لیست درخواست‌های تبدیل به سازنده' })
+  async getRequests() {
+    return successResponse(await this.creatorService.getRequests());
+  }
+
+  @Patch('requests/:id/review')
+  @Auth('ADMIN')
+  @ApiOperation({ summary: 'بررسی و تایید یا رد درخواست تبدیل به سازنده' })
+  async reviewRequest(@Param('id') id: string, @Body() dto: ReviewRequestDto) {
+    return successResponse(await this.creatorService.reviewRequest(id, dto.action, dto.reviewComment));
   }
 }

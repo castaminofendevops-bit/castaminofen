@@ -576,6 +576,48 @@ textarea:focus-visible,
   font-weight: 600;
 }
 
+.badge-success {
+  background: var(--brand-accent-green);
+}
+
+.badge-warning {
+  background: #f6c555;
+  color: var(--text-primary);
+}
+
+.badge-danger {
+  background: var(--error);
+}
+
+.admin-request-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-request-card {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.admin-request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.request-status-card {
+  padding: 1rem;
+  margin-top: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 /* Profile header */
 .profile-header {
   background: var(--bg-secondary);

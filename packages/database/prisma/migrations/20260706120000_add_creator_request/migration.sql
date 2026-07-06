@@ -1,3 +1,11 @@
+-- Create enum for creator request status
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'CreatorRequestStatus') THEN
+    CREATE TYPE "CreatorRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+  END IF;
+END$$;
+
 -- Create table for creator onboarding requests
 CREATE TABLE IF NOT EXISTS "creator_requests" (
   "id" TEXT NOT NULL,
@@ -6,7 +14,8 @@ CREATE TABLE IF NOT EXISTS "creator_requests" (
   "bio" TEXT,
   "sampleUrl" TEXT,
   "idFileUrl" TEXT,
-  "status" TEXT NOT NULL DEFAULT 'PENDING',
+  "status" "CreatorRequestStatus" NOT NULL DEFAULT 'PENDING',
+  "reviewComment" TEXT,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "creator_requests_pkey" PRIMARY KEY ("id")
