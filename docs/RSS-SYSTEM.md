@@ -66,9 +66,9 @@
 
 ## ماژول ۱: RSS Parser
 
-### دریافت فید
+-### دریافت فید
 
-- HTTP GET با timeout حداقل 60 ساعت
+- HTTP GET با timeout حداقل 60 ثانیه
 - User-Agent مشخص (مثلاً `PodcastRSSImporter/1.0`)
 - خطاهای HTTP (غیر 2xx)، بدنه خالی، XML نامعتبر → گزارش خطا و ادامه با فید بعدی
 
@@ -181,6 +181,19 @@
    - اگر user جدید → welcome email (فقط اگر email واقعی، نه generated)
    - status = "imported"
 6. گزارش: created / updated / skipped per feed
+
+### mirrorMedia (سینک/آئینه‌سازی رسانه)
+
+در پیاده‌سازی current، ایمپورت به‌صورت پیش‌فرض فقط URL رسانه (`audio_url`/`enclosure`) را ذخیره می‌کند و دادهٔ باینری رسانه‌ای را دانلود نمی‌کند. گزینهٔ `mirrorMedia` به‌صورت اختیاری فعال می‌شود تا رفتار زیر انجام شود:
+
+- اگر `mirrorMedia: false` (پیش‌فرض): فقط `mediaUrl` اپیزود برابر با آدرس منبع خارجی ذخیره می‌شود. دانلود و پردازش رسانه صورت نمی‌گیرد.
+- اگر `mirrorMedia: true`: سرور ابتدا فایل رسانه‌ای را با `GET` دانلود می‌کند سپس با `StorageService.uploadObject` آن را در storage (MinIO/S3) آپلود می‌کند و `mediaUrl` اپیزود را به آدرس آپلودشده تغییر می‌دهد.
+
+نکات عملی و محدودیت‌ها:
+
+- عملیات mirror می‌تواند هزینه‌بر و زمان‌بر باشد (network + storage). پیشنهاد می‌شود این گزینه فقط برای import‌های کنترل‌شده و batchهای کوچک استفاده شود.
+- در صورت فعال‌سازی، مطمئن شوید که `StorageModule` و متغیرهای env مربوط به S3/MinIO (`STORAGE_ENDPOINT`, `STORAGE_BUCKET`, `STORAGE_KEY`, `STORAGE_SECRET`) درست پیکربندی شده‌اند.
+- فایل‌های بزرگ یا تایم‌اوت‌های شبکه باید با retry/timeout منطقی کنترل شوند؛ در پیاده‌سازی فعلی timeout دانلود رسانه کوتاه‌تری از fetch فید نیست و خطاها به گزارش import افزوده می‌شوند.
 ```
 
 ### منطق import اپیزود
