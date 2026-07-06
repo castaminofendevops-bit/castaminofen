@@ -9,6 +9,8 @@ export interface RssFeedItem {
   duration?: string;
   seasonNumber: number;
   episodeNumber: number;
+  isVideo?: boolean;
+  enclosureType?: string;
 }
 
 export interface RssChannel {

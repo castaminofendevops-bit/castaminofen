@@ -74,16 +74,19 @@ export class RssFeedService {
 
   private buildXml(channel: RssChannel): string {
     const itemsXml = channel.episodes
-      .map((episode) => `
+      .map((episode) => {
+        const type = episode.enclosureType || (episode.isVideo ? 'video/mp4' : 'audio/mpeg');
+        return `
       <item>
         <title>${this.escape(episode.title)}</title>
         <link>${this.escape(episode.audioUrl)}</link>
         <guid isPermaLink="false">${this.escape(episode.guid || episode.audioUrl)}</guid>
         <pubDate>${new Date(episode.publishDate).toUTCString()}</pubDate>
         <description><![CDATA[${episode.content || ''}]]></description>
-        <enclosure url="${this.escape(episode.audioUrl)}" length="0" type="audio/mpeg"/>
+        <enclosure url="${this.escape(episode.audioUrl)}" length="0" type="${this.escape(type)}"/>
         <itunes:duration>${this.escape(episode.duration || '')}</itunes:duration>
-      </item>`)
+      </item>`;
+      })
       .join('');
 
     const categoriesXml = channel.categories

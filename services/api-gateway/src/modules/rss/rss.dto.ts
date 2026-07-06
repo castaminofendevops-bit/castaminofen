@@ -12,6 +12,16 @@ export class ImportRssDto {
   @IsObject()
   emailMap?: Record<string, string>;
 
+  @ApiPropertyOptional({ description: 'نوع محتوا برای این فید', enum: ['PODCAST', 'AUDIOBOOK', 'VIDEO'], example: 'PODCAST' })
+  @IsOptional()
+  @IsEnum(['PODCAST', 'AUDIOBOOK', 'VIDEO'])
+  contentType?: string;
+
+  @ApiPropertyOptional({ description: 'اگر true باشد، فایل رسانه‌ای از فید RSS دانلود و به استوریج منتقل می‌شود', example: false })
+  @IsOptional()
+  @IsBoolean()
+  mirrorMedia?: boolean;
+
   @ApiPropertyOptional({ description: 'دامنه برای ایمیل ساختگی', example: 'castaminofen.ir' })
   @IsOptional()
   @IsString()

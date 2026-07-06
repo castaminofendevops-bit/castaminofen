@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { StorageService } from '../../common/storage/storage.service';
 import { RssParserService } from './rss-parser.service';
 import { RssFeedService } from './rss-feed.service';
 import { ImportRssDto } from './rss.dto';
@@ -11,6 +12,7 @@ export class RssImporterService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
     private readonly rssParser: RssParserService,
     private readonly rssFeedService: RssFeedService,
   ) {}
@@ -67,7 +69,16 @@ export class RssImporterService {
     }
 
     for (const url of Array.from(normalizedSet)) {
-      const result = await this.importFeed(url, normalizedEmailMap[url], emailDomain, dryRun, skipExisting, limitEpisodes);
+      const result = await this.importFeed(
+        url,
+        normalizedEmailMap[url],
+        emailDomain,
+        dryRun,
+        skipExisting,
+        limitEpisodes,
+        dto.contentType as any,
+        dto.mirrorMedia ?? false,
+      );
       results.push(result);
     }
 
@@ -85,6 +96,8 @@ export class RssImporterService {
     dryRun: boolean,
     skipExisting: boolean,
     limitEpisodes: number,
+    contentTypeOverride?: 'PODCAST' | 'AUDIOBOOK' | 'VIDEO',
+    mirrorMedia = false,
   ): Promise<RssImportFeedResult> {
     try {
       const normalizedUrl = this.rssParser.normalizeFeedUrl(feedUrl);
@@ -93,9 +106,10 @@ export class RssImporterService {
       const ownerEmail = mappedEmail || parsed.ownerEmail || this.generateFallbackEmail(parsed.title, emailDomain);
       const creatorProfile = await this.getOrCreateCreator(ownerEmail, parsed.title, dryRun);
       const existingContent = await this.prisma.content.findFirst({ where: { sourceFeedUrl: normalizedUrl } });
+      const contentType = contentTypeOverride || 'PODCAST';
       const commonContentData = {
         creatorId: creatorProfile?.id ?? '',
-        type: 'PODCAST' as const,
+        type: contentType as const,
         title: parsed.title || `Podcast ${Date.now()}`,
         slug: this.slugify(parsed.title || `podcast-${Date.now()}`),
         description: parsed.description || undefined,
@@ -162,6 +176,9 @@ export class RssImporterService {
           continue;
         }
 
+        const mediaResult = await this.mirrorMediaIfNeeded(item, creatorProfile.id, dryRun, mirrorMedia);
+        const mediaUrl = mediaResult.mediaUrl;
+
         if (!dryRun) {
           await this.prisma.episode.create({
             data: {
@@ -171,10 +188,11 @@ export class RssImporterService {
               description: item.content || undefined,
               episodeNumber: item.episodeNumber,
               duration: this.durationToSeconds(item.duration),
-              mediaUrl: item.audioUrl,
+              mediaUrl,
               thumbnailUrl: item.coverUrl || undefined,
               publishedAt: new Date(item.publishDate),
               rssGuid: item.guid,
+              isVideo: item.isVideo ?? false,
             },
           });
           await this.prisma.content.update({ where: { id: content.id }, data: { episodeCount: { increment: 1 } } });
@@ -259,8 +277,12 @@ export class RssImporterService {
       return { id: 'dryrun', userId: 'dryrun' } as any;
     }
 
-    const newUser = await this.prisma.user.create({ data: { email, displayName: title || 'Podcast Owner', role: 'CREATOR', passwordHash: '' } });
-    return this.prisma.creatorProfile.create({ data: { userId: newUser.id, slug: this.slugify(`${title}-${newUser.id}`) } });
+    const newUser = await this.prisma.user.create({
+      data: { email, displayName: title || 'Podcast Owner', role: 'CREATOR', passwordHash: '' },
+    });
+    return this.prisma.creatorProfile.create({
+      data: { userId: newUser.id, slug: this.slugify(`${title}-${newUser.id}`) },
+    });
   }
 
   private async findExistingEpisode(contentId: string, guid?: string, audioUrl?: string) {
@@ -273,6 +295,37 @@ export class RssImporterService {
     }
     return null;
   }
+
+  private async mirrorMediaIfNeeded(item: any, creatorId: string, dryRun: boolean, mirrorMedia: boolean) {
+    if (!mirrorMedia || !item.audioUrl) {
+      return { mediaUrl: item.audioUrl };
+    }
+
+    const contentType = item.enclosureType || (item.isVideo ? 'video/mp4' : 'audio/mpeg');
+    const extension = contentType.split('/').pop() || 'bin';
+    const fileName = `${this.slugify(item.title)}.${extension}`;
+    const mediaKey = this.storageService.buildMediaKey(creatorId, fileName);
+
+    if (dryRun) {
+      return {
+        mediaUrl: item.audioUrl,
+        mediaKey,
+        contentType,
+      };
+    }
+
+    const remoteResponse = await fetch(item.audioUrl, {
+      method: 'GET',
+      headers: { 'User-Agent': 'CastaminofenRSSImporter/1.0' },
+    });
+    if (!remoteResponse.ok) {
+      throw new Error(`Failed to fetch media from ${item.audioUrl}: ${remoteResponse.status}`);
+    }
+    const buffer = Buffer.from(await remoteResponse.arrayBuffer());
+    const uploaded = await this.storageService.uploadObject(mediaKey, buffer, contentType);
+    return { mediaUrl: uploaded.mediaUrl, mediaKey: uploaded.mediaKey, contentType };
+  }
+
 
   private generateFallbackEmail(title: string, domain: string): string {
     const slug = this.slugify(title || 'podcast');

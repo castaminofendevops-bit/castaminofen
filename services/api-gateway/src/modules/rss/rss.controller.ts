@@ -17,7 +17,19 @@ export class RssController {
   @Post('creator/import-rss')
   @Auth('ADMIN')
   @ApiOperation({ summary: 'Import RSS feeds for creator podcasts' })
-  @ApiBody({ type: ImportRssDto })
+  @ApiBody({
+    type: ImportRssDto,
+    schema: {
+      example: {
+        feeds: ['https://feed.podbean.com/RadioRaah/feed.xml'],
+        contentType: 'PODCAST',
+        mirrorMedia: false,
+        dryRun: true,
+        skipExisting: true,
+        limitEpisodes: 0,
+      },
+    },
+  })
   async importRss(@Body() payload: ImportRssDto) {
     try {
       const result = await this.rssImporter.importFeeds(payload);

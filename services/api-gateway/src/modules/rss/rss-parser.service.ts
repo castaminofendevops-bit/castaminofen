@@ -112,6 +112,8 @@ export class RssParserService {
       const duration = this.parseDuration(this.extractText(item['itunes:duration']) || this.extractText(item.duration));
       const seasonNumber = Number(this.extractText(item['itunes:season']) || 1) || 1;
       const episodeNumber = Number(this.extractText(item['itunes:episode']) || this.extractText(item['itunes:episodeNumber']) || index + 1) || index + 1;
+      const enclosureType = this.extractText(item.enclosure?.['@_type']) || this.extractText(item['media:content']?.['@_type']) || '';
+      const isVideo = enclosureType.startsWith('video/') || /mp4|webm|mkv/i.test(enclosureType) || /\.mp4$|\.webm$/i.test(audioUrl);
 
       return {
         title,
@@ -124,6 +126,8 @@ export class RssParserService {
         duration: duration || undefined,
         seasonNumber,
         episodeNumber,
+        isVideo,
+        enclosureType: enclosureType || undefined,
       };
     }).filter((item) => Boolean(item.audioUrl));
   }
