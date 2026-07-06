@@ -1,0 +1,27 @@
+{
+  "name": "castaminofen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Super App رسانه‌ای — پادکست، کتاب صوتی، ویدیو",
+  "scripts": {
+    "postinstall": "pnpm db:generate",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "db:generate": "pnpm --filter @castaminofen/database generate",
+    "db:migrate": "pnpm --filter @castaminofen/database migrate:dev",
+    "db:seed": "pnpm --filter @castaminofen/database seed",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
