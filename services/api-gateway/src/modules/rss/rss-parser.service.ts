@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { parse } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import { RssChannel, RssFeedItem } from './rss.types';
 
 const defaultOptions = {
@@ -70,7 +70,8 @@ export class RssParserService {
   }
 
   parseFeed(xml: string, feedUrl: string): RssChannel {
-    const parsed = parse(xml, defaultOptions) as any;
+    const parser = new XMLParser(defaultOptions);
+    const parsed = parser.parse(xml) as any;
     const channel = parsed?.rss?.channel || parsed?.feed;
     if (!channel) throw new Error('Invalid RSS feed structure');
 
