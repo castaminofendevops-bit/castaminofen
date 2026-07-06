@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePlayerStore } from '@/store/player';
-import { API_URL } from '@/lib/api';
+import { API_URL, apiFetch } from '@/lib/api';
 
 type CreatorRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
