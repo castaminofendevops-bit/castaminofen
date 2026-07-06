@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { StorageService } from '../../common/storage/storage.service';
 import { RssParserService } from './rss-parser.service';
+import { RssFeedService } from './rss-feed.service';
 import { ImportRssDto } from './rss.dto';
 import { RssImportSummary, RssImportFeedResult } from './rss.types';
 
@@ -11,8 +11,8 @@ export class RssImporterService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly storageService: StorageService,
     private readonly rssParser: RssParserService,
+    private readonly rssFeedService: RssFeedService,
   ) {}
 
   async importFeeds(dto: ImportRssDto): Promise<RssImportSummary> {
@@ -87,12 +87,13 @@ export class RssImporterService {
     limitEpisodes: number,
   ): Promise<RssImportFeedResult> {
     try {
-      const xml = await this.fetchFeed(feedUrl);
-      const parsed = this.rssParser.parseFeed(xml, feedUrl);
+      const normalizedUrl = this.rssParser.normalizeFeedUrl(feedUrl);
+      const xml = await this.fetchFeed(normalizedUrl);
+      const parsed = this.rssParser.parseFeed(xml, normalizedUrl);
       const ownerEmail = mappedEmail || parsed.ownerEmail || this.generateFallbackEmail(parsed.title, emailDomain);
       const creatorProfile = await this.getOrCreateCreator(ownerEmail, parsed.title, dryRun);
-      const existingContent = await this.prisma.content.findFirst({ where: { sourceFeedUrl: feedUrl } });
-      const contentData = {
+      const existingContent = await this.prisma.content.findFirst({ where: { sourceFeedUrl: normalizedUrl } });
+      const commonContentData = {
         creatorId: creatorProfile?.id ?? '',
         type: 'PODCAST' as const,
         title: parsed.title || `Podcast ${Date.now()}`,
@@ -101,9 +102,13 @@ export class RssImporterService {
         coverUrl: parsed.image || undefined,
         status: 'PUBLISHED' as const,
         language: parsed.language || 'fa',
-        sourceFeedUrl: feedUrl,
+        sourceFeedUrl: normalizedUrl,
+      };
+      const contentCreateData = {
+        ...commonContentData,
         publishedAt: new Date(),
       };
+      const contentUpdateData = { ...commonContentData };
 
       let content;
       let status: RssImportFeedResult['status'] = existingContent ? 'updated' : 'imported';
@@ -111,9 +116,9 @@ export class RssImporterService {
         content = existingContent || null;
       } else {
         if (existingContent) {
-          content = await this.prisma.content.update({ where: { id: existingContent.id }, data: contentData });
+          content = await this.prisma.content.update({ where: { id: existingContent.id }, data: contentUpdateData });
         } else {
-          content = await this.prisma.content.create({ data: contentData });
+          content = await this.prisma.content.create({ data: contentCreateData });
         }
       }
 
@@ -138,7 +143,7 @@ export class RssImporterService {
       for (const item of episodeItems) {
         const existingEpisode = await this.findExistingEpisode(content.id, item.guid, item.audioUrl);
         if (existingEpisode) {
-          if (!skipExisting && dryRun) {
+          if (skipExisting) {
             skipped += 1;
             continue;
           }
@@ -149,6 +154,7 @@ export class RssImporterService {
               thumbnailUrl: item.coverUrl || undefined,
               publishedAt: new Date(item.publishDate),
               duration: item.duration ? this.durationToSeconds(item.duration) : undefined,
+              rssGuid: item.guid || existingEpisode.rssGuid,
             };
             await this.prisma.episode.update({ where: { id: existingEpisode.id }, data: updateData });
           }
@@ -176,10 +182,14 @@ export class RssImporterService {
         created += 1;
       }
 
+      if (!dryRun && content?.slug) {
+        await this.rssFeedService.invalidateCache(content.slug);
+      }
+
       return {
-        feedUrl,
+        feedUrl: normalizedUrl,
         title: parsed.title,
-        podcastId: content.id,
+        podcastId: content?.id ?? null,
         episodesCount: episodeItems.length,
         episodesCreated: created,
         episodesUpdated: updated,

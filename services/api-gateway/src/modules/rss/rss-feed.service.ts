@@ -61,7 +61,7 @@ export class RssFeedService {
       title: content.title,
       description: content.description || '',
       image: content.coverUrl || undefined,
-      link: '',
+      link: content.sourceFeedUrl || '',
       language: content.language || 'fa',
       author: ownerName,
       ownerName,
@@ -86,6 +86,11 @@ export class RssFeedService {
       </item>`)
       .join('');
 
+    const categoriesXml = channel.categories
+      .filter(Boolean)
+      .map((category) => `<itunes:category text="${this.escape(category)}"/>`)
+      .join('\n    ');
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
@@ -95,8 +100,13 @@ export class RssFeedService {
     <language>${this.escape(channel.language || 'fa')}</language>
     <copyright>© ${this.escape(channel.ownerName || '')}</copyright>
     <itunes:author>${this.escape(channel.author || '')}</itunes:author>
+    <itunes:owner>
+      <itunes:name>${this.escape(channel.ownerName || '')}</itunes:name>
+      <itunes:email>${this.escape(channel.ownerEmail || '')}</itunes:email>
+    </itunes:owner>
     <itunes:explicit>no</itunes:explicit>
     ${channel.image ? `<itunes:image href="${this.escape(channel.image)}"/>` : ''}
+    ${categoriesXml}
     ${itemsXml}
   </channel>
 </rss>`;
