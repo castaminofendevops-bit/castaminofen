@@ -4,14 +4,14 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { StorageService } from '../../common/storage/storage.service';
 import { RssParserService } from './rss-parser.service';
 
-const mockPrisma = {
+const mockPrisma: any = {
   user: { findUnique: jest.fn(), create: jest.fn() },
   creatorProfile: { findUnique: jest.fn(), create: jest.fn() },
   content: { findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
   episode: { findFirst: jest.fn(), create: jest.fn(), update: jest.fn() },
 };
 
-const mockStorage = { createUploadUrl: jest.fn(), buildMediaKey: jest.fn(), uploadObject: jest.fn() };
+const mockStorage: any = { createUploadUrl: jest.fn(), buildMediaKey: jest.fn(), uploadObject: jest.fn() };
 
 describe('RssImporterService', () => {
   let service: RssImporterService;

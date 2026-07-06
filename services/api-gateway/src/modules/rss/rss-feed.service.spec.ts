@@ -3,7 +3,7 @@ import { RssFeedService } from './rss-feed.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
 
-const mockPrisma = {
+const mockPrisma: any = {
   content: {
     findFirst: jest.fn().mockResolvedValue({
       slug: 'test-podcast',
@@ -31,7 +31,7 @@ const mockPrisma = {
   },
 };
 
-const mockRedis = {
+const mockRedis: any = {
   get: jest.fn().mockResolvedValue(null),
   set: jest.fn().mockResolvedValue(undefined),
   del: jest.fn().mockResolvedValue(undefined),
