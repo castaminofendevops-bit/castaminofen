@@ -47,6 +47,12 @@ enum PurchaseStatus {
   REFUNDED
 }
 
+enum CreatorRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum DownloadStatus {
   PENDING
   IN_PROGRESS
@@ -72,6 +78,7 @@ model User {
   oauthAccounts   OAuthAccount[]
   refreshTokens   RefreshToken[]
   creatorProfile  CreatorProfile?
+  creatorRequests CreatorRequest[]
   subscription    Subscription?
   purchases       Purchase[]
   follows         Follow[]
@@ -143,6 +150,7 @@ model Content {
   description   String?
   coverUrl      String?
   status        ContentStatus @default(DRAFT)
+  sourceFeedUrl String?       @unique
   isPremium     Boolean       @default(false)
   price         Int?          // Price in Rial (0 = free)
   language      String        @default("fa")
@@ -177,6 +185,7 @@ model Episode {
   thumbnailUrl  String?
   isPremium     Boolean  @default(false)
   isVideo       Boolean  @default(false)
+  rssGuid       String?   @unique
   publishedAt   DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -350,4 +359,23 @@ model Purchase {
   @@index([userId])
   @@index([gatewayRef])
   @@map("purchases")
+}
+
+// Creator onboarding requests
+model CreatorRequest {
+  id            String               @id @default(cuid())
+  userId        String
+  fullName      String
+  bio           String?
+  sampleUrl     String?
+  idFileUrl     String?
+  status        CreatorRequestStatus @default(PENDING)
+  reviewComment String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("creator_requests")
 }

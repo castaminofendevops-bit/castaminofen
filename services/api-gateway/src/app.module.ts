@@ -14,6 +14,8 @@ import { RedisModule } from './common/redis/redis.module';
 import { GlobalAuthGuard } from './common/guards/global-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { StorageModule } from './common/storage/storage.module';
+import { CreatorModule } from './modules/creator/creator.module';
+import { RssModule } from './modules/rss/rss.module';
 
 @Module({
   imports: [
@@ -29,8 +31,11 @@ import { StorageModule } from './common/storage/storage.module';
     AuthModule,
     ContentModule,
     MediaModule,
+    // Creator onboarding
+    CreatorModule,
     UserModule,
     PaymentModule,
+    RssModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: GlobalAuthGuard },

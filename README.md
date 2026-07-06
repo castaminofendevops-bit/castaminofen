@@ -80,6 +80,17 @@ castaminofen/
 pnpm test
 ```
 
+## نمونه: Import RSS (mirrorMedia)
+
+برای مشاهده نمونه درخواست `mirrorMedia` و توضیحات بیشتر، به بخش مربوطه در [مشخصات API](./docs/API.md) مراجعه کنید. نمونه درخواست سریع:
+
+```json
+{
+	"feeds": ["https://feed.podbean.com/RadioRaah/feed.xml"],
+	"mirrorMedia": true
+}
+```
+
 ## لایسنس
 
 Proprietary — Castaminofen MVP

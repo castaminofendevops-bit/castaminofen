@@ -98,3 +98,28 @@
   "error": { "code": "PREMIUM_REQUIRED", "message": "..." }
 }
 ```
+
+## Import RSS — نمونه درخواست (mirrorMedia)
+
+این endpoint برای ایمپورت فیدهای RSS توسط ادمین/سازنده طراحی شده است. فیلد `mirrorMedia` کنترل می‌کند که آیا فایل‌های رسانه‌ای از URLهای enclosure دانلود و در فضای ذخیره‌سازی داخلی آیتم (MinIO/S3) mirror شوند یا خیر. مقدار پیش‌فرض `false` است — در این حالت فقط آدرس رسانه در رکورد اپیزود ذخیره می‌شود.
+
+نمونه بدنه درخواست:
+
+```json
+{
+  "feeds": ["https://feed.podbean.com/RadioRaah/feed.xml"],
+  "contentType": "PODCAST",
+  "mirrorMedia": true,
+  "dryRun": false,
+  "skipExisting": true,
+  "limitEpisodes": 0
+}
+```
+
+توضیح کوتاه:
+- `feeds`: آرایه URLهای فید RSS.
+- `contentType`: نوع محتوا (مثلاً `PODCAST`).
+- `mirrorMedia`: اگر `true` باشد، سرور فایل رسانه را دانلود و در Storage آپلود می‌کند و آدرس ذخیره‌شده را برای اپیزود استفاده می‌کند.
+- `dryRun`: فقط شبیه‌سازی ایمپورت بدون نوشتن در DB.
+- `skipExisting`: از بازنویسی اپیزودهای موجود جلوگیری می‌کند.
+- `limitEpisodes`: عدد >0 برای محدود کردن تعداد اپیزودهای واردشده.

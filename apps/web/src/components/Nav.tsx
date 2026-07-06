@@ -18,6 +18,7 @@ export function Nav() {
     { href: '/search', label: 'جستجو' },
     { href: '/library', label: 'کتابخانه' },
     ...(isCreator ? [{ href: '/creator', label: 'پنل سازنده' }] : []),
+    ...(user?.role === 'ADMIN' ? [{ href: '/admin', label: 'مدیریت' }] : []),
   ];
 
   const handleLogout = () => {
